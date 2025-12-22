@@ -3,141 +3,192 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
-  <title>Math Adventure Ultra - Pro UI</title>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+  <title>Mathletics - Fun Math Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Fredoka+One&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #6c5ce7;
-      --secondary: #a29bfe;
+      --primary: #a29bfe;
+      --primary-dark: #6c5ce7;
+      --bg-color: #f8f7ff;
+      --card-bg: #ffffff;
       --success: #00b894;
       --danger: #ff7675;
-      --warning: #f1c40f;
-      --white: #ffffff;
-      --gray: #b2bec3;
+      --gold: #f1c40f;
     }
 
     body {
       font-family: 'Kanit', sans-serif;
-      margin: 0; background: #f0f2f5;
+      margin: 0; background: var(--bg-color);
       display: flex; align-items: center; justify-content: center;
-      height: 100vh; overflow: hidden;
+      height: 100vh; overflow: hidden; touch-action: manipulation;
+    }
+
+    .logo-text {
+      font-family: 'Fredoka One', cursive;
+      font-size: 3.5rem;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+      display: inline-block;
+    }
+    .logo-text span:nth-child(1) { color: #ed7d7d; }
+    .logo-text span:nth-child(2) { color: #f9b872; }
+    .logo-text span:nth-child(3) { color: #ffca85; }
+    .logo-text span:nth-child(4) { color: #ffe68d; }
+    .logo-text span:nth-child(5) { color: #a8e6cf; }
+    .logo-text span:nth-child(6) { color: #92d5e6; }
+    .logo-text span:nth-child(7) { color: #a29bfe; }
+    .logo-text span:nth-child(8) { color: #c3e0a0; }
+    .logo-text span:nth-child(9) { color: #ffd372; }
+    .logo-text span:nth-child(10) { color: #f9b872; }
+
+    #music-control {
+      position: fixed; top: 20px; right: 20px; z-index: 1000;
+      background: white; border: 2px solid var(--primary);
+      width: 45px; height: 45px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      font-size: 1.2rem; transition: 0.2s;
     }
 
     .screen {
       position: absolute; width: 100%; max-width: 480px;
       padding: 20px; box-sizing: border-box; text-align: center;
-      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+      transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .hidden { display: none !important; opacity: 0; transform: scale(0.9); }
 
     .card {
-      background: var(--white); padding: 30px 25px;
-      border-radius: 35px; box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-      border-bottom: 8px solid #dfe6e9;
+      background: var(--card-bg); padding: 30px 25px;
+      border-radius: 35px; box-shadow: 0 20px 40px rgba(108, 92, 231, 0.1);
+      border-bottom: 8px solid #efecfd;
     }
 
-    /* --- ปรับปรุงช่องพิมคำตอบ (New Input UI) --- */
-    .input-wrapper { margin: 25px 0; position: relative; }
-    
-    input[type="text"] {
-      width: 100%; padding: 20px; font-size: 2.2rem;
-      border: 4px solid #edeff2; border-radius: 25px;
-      text-align: center; color: var(--primary); font-weight: 600;
-      background: #fcfdff; transition: all 0.3s; outline: none;
-      box-sizing: border-box;
-    }
-
-    input[type="text"]:focus {
-      border-color: var(--secondary); background: #fff;
-      box-shadow: 0 0 20px rgba(108, 92, 231, 0.15);
-      transform: translateY(-2px);
-    }
-
-    /* --- สไตล์ปุ่ม --- */
-    .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
-    
     button {
       background: var(--primary); color: white; border: none;
-      padding: 18px 25px; border-radius: 20px; font-size: 1.1rem;
+      padding: 18px 25px; border-radius: 22px; font-size: 1.1rem;
       font-weight: 600; cursor: pointer; transition: 0.2s;
-      box-shadow: 0 6px 0 #5849c4; font-family: 'Kanit';
-      flex: 1; /* ให้ปุ่มกางเท่ากัน */
+      box-shadow: 0 6px 0 #8c85e6; width: 100%; font-family: 'Kanit';
+      margin-bottom: 10px;
+    }
+    button.secondary { background: #b2bec3; box-shadow: 0 6px 0 #95a5a6; }
+    button.rank-btn { background: #8e44ad; box-shadow: 0 6px 0 #703688; }
+    button:active { transform: translateY(3px); box-shadow: 0 2px 0 #8c85e6; }
+
+    .info-box { 
+      text-align: left; 
+      background: #fdfbff; 
+      padding: 20px; 
+      border-radius: 25px; 
+      margin-bottom: 20px; 
+      border: 1px solid #f0edff; 
+      font-size: 1.05rem; 
+      line-height: 1.6;
+      max-height: 300px; 
+      overflow-y: auto;
+    }
+    
+    input[type="text"] {
+      width: 100%; padding: 18px; font-size: 2.2rem;
+      border: 4px solid #efecfd; border-radius: 25px;
+      text-align: center; color: var(--primary-dark); font-weight: 600;
+      background: #fdfbff; outline: none; box-sizing: border-box;
     }
 
-    button.secondary {
-      background: var(--gray); box-shadow: 0 6px 0 #636e72;
-    }
-
-    button:hover { filter: brightness(1.1); transform: translateY(-2px); }
-    button:active { transform: translateY(3px); box-shadow: 0 2px 0 #5849c4; }
-
-    /* --- องค์ประกอบอื่นๆ --- */
-    .info-box { text-align: left; background: #f8f9ff; padding: 20px; border-radius: 20px; margin-bottom: 20px; }
-    .question-box { font-size: 3.5rem; font-weight: 600; margin: 20px 0; color: #2d3436; }
-    .timer-bar { width: 100%; height: 12px; background: #eee; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+    .timer-bar { width: 100%; height: 12px; background: #eee; border-radius: 10px; overflow: hidden; margin-bottom: 15px; }
     #timer-fill { height: 100%; background: var(--primary); width: 100%; }
+    #bonus-label { color: var(--success); font-weight: bold; opacity: 0; height: 20px; }
+    .combo-badge { display: inline-block; padding: 5px 15px; border-radius: 15px; background: #eee; color: #777; font-size: 0.9rem; margin-top: 10px; }
+    .combo-active { background: var(--primary-dark); color: white; transform: scale(1.1); }
+
+    .rank-table { width: 100%; margin-top: 15px; border-collapse: collapse; background: #fdfbff; border-radius: 15px; overflow: hidden; }
+    .rank-table tr { border-bottom: 1px solid #f0edff; }
+    .rank-table td { padding: 12px; font-size: 1rem; }
+    .top-rank { color: var(--gold); font-weight: bold; background: #fffdf0; }
+    .shake-screen { animation: screenShake 0.4s; }
+    @keyframes screenShake {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(-5px, 5px); }
+      50% { transform: translate(5px, -5px); }
+      75% { transform: translate(-5px, -5px); }
+    }
   </style>
 </head>
 <body id="mainBody">
 
+  <div id="music-control" onclick="toggleMusic()">🔊</div>
+
   <div id="intro" class="screen">
     <div class="card">
-      <div style="font-size: 4rem;">🎮</div>
-      <h1>Math Adventure</h1>
-      <p style="color:#636e72">ยินดีต้อนรับสู่โลกแห่งตัวเลข!</p>
-      <div class="info-box">
-        <b>เนื้อหาที่ต้องเจอ:</b>
-        <ul style="margin: 10px 0; padding-left: 20px; font-size: 0.9rem;">
-          <li>การบวก ลบ และคูณเลขพื้นฐาน</li>
-          <li>ระบบเวลาที่ท้าทายความเร็ว</li>
-          <li>การเก็บสถิติเพื่อพัฒนาตนเอง</li>
-        </ul>
+      <div class="logo-text">
+        <span>M</span><span>A</span><span>T</span><span>H</span><span>L</span><span>E</span><span>T</span><span>I</span><span>C</span><span>S</span>
       </div>
-      <button onmouseenter="playSfx(800)" onclick="changeScreen('mathTips1')">เข้าสู่คำแนะนำ</button>
+      <p style="margin-top:0; color:#636e72;">ยินดีต้อนรับสู่โลกแห่งตัวเลข</p>
+      <button onclick="initAudio(); changeScreen('mathTips1')">เข้าสู่คำแนะนำ ➡️</button>
+      <button class="rank-btn" onclick="viewRanks()">🏆 ดูอันดับ Rank ของฉัน</button>
+    </div>
+  </div>
+
+  <div id="rankView" class="screen hidden">
+    <div class="card">
+      <div style="font-size: 3rem;">🏆</div>
+      <h2 style="color:var(--primary-dark)">อันดับสูงสุดของคุณ</h2>
+      <table class="rank-table" id="viewRankTable"></table>
+      <div style="margin-top: 20px;">
+        <button class="secondary" onclick="changeScreen('intro')">🔙 ย้อนกลับ</button>
+      </div>
     </div>
   </div>
 
   <div id="mathTips1" class="screen hidden">
     <div class="card">
-      <h2>📖 ขั้นตอนการเล่น</h2>
+      <h2>📖 วิธีเล่น & โบนัส</h2>
       <div class="info-box">
-        1. พิมพ์คำตอบลงในช่อง <b>"ตัวเลข"</b><br>
-        2. กด <b>"ส่งคำตอบ"</b> หรือปุ่ม <b>Enter</b><br>
-        3. ตอบให้ทันก่อน <b>"แถบเวลา"</b> จะหมด<br>
-        4. เกมจะเล่นทั้งหมด 20 ข้อ
+        • ตอบให้ไวเพื่อรับ <b>โบนัสความเร็ว</b><br>
+        • ตอบถูกต่อเนื่องเพื่อสะสม <b>Combo</b> ตัวคูณคะแนน<br>
+        • ยิ่งโหมดยาก คะแนนต่อข้อจะยิ่งสูง!<br>
+        • ดนตรีเบาๆ ช่วยให้คุณมีสมาธิมากขึ้น
       </div>
-      <div class="btn-group">
-        <button onmouseenter="playSfx(800)" class="secondary" onclick="changeScreen('intro')">ย้อนกลับ</button>
-        <button onmouseenter="playSfx(800)" onclick="changeScreen('mathTips2')">ถัดไป ➡️</button>
+      <div style="display:flex; gap:10px;">
+        <button class="secondary" onclick="changeScreen('intro')">ย้อนกลับ</button>
+        <button onclick="changeScreen('mathGuide')">ต่อไป 💡</button>
       </div>
     </div>
   </div>
 
-  <div id="mathTips2" class="screen hidden">
+  <div id="mathGuide" class="screen hidden">
     <div class="card">
-      <h2>🔥 ระบบคะแนน</h2>
+      <h2 style="color:var(--primary-dark)">💡 เกร็ดน่ารู้สู่ชัยชนะ</h2>
       <div class="info-box">
-        • <b>ถูก:</b> +10 คะแนน<br>
-        • <b>ผิด:</b> -5 คะแนน<br>
-        • <b>Combo:</b> ตอบถูกต่อเนื่องจะได้คะแนนคูณเพิ่ม!<br>
-        • <b>สถิติ:</b> มีการบันทึกคะแนนสูงสุดในเครื่อง
+        <b style="font-size: 1.2rem; color: #00b894;">🟢 โหมดง่าย:</b><br>
+        • เลขอะไรคูณ 0 ได้ 0 เสมอ!<br>
+        • เทคนิคบวก 9: ให้ +10 แล้วหักออก 1 จะไวขึ้นมาก<br><br>
+        
+        <b style="font-size: 1.2rem; color: #8e44ad;">🟡 โหมดปานกลาง:</b><br>
+        • กฎเครื่องหมาย: ลบ เจอกับ ลบ กลายเป็น <b>บวก</b>!<br>
+        • การย้ายข้างสมการ: ย้ายจาก + ไปเป็น -, ย้ายจาก × ไปเป็น ÷<br>
+        • เลขยกกำลังพื้นฐาน: 11²=121, 12²=144, 15²=225<br><br>
+        
+        <b style="font-size: 1.2rem; color: var(--primary-dark);">🔴 โหมดระดับยาก:</b><br>
+        • <b>ตรีโกณ:</b> ใช้กฎมือซ้ายช่วยจำ sin(ซ้าย) cos(ขวา)<br>
+        • <b>Logarithm:</b> logₐ a = 1 และ logₐ 1 = 0 เสมอ<br>
+        • <b>เลขยกกำลังติดลบ:</b> a⁻ⁿ คือเศษส่วน เช่น 2⁻¹ = 1/2
       </div>
-      <div class="btn-group">
-        <button onmouseenter="playSfx(800)" class="secondary" onclick="changeScreen('mathTips1')">ย้อนกลับ</button>
-        <button onmouseenter="playSfx(800)" onclick="changeScreen('mode')" style="background:var(--success); box-shadow:0 6px 0 #009476;">เลือกโหมด ✅</button>
+      <div style="display:flex; gap:10px;">
+        <button class="secondary" onclick="changeScreen('mathTips1')">ย้อนกลับ</button>
+        <button onclick="changeScreen('mode')">ไปเลือกโหมด 🎮</button>
       </div>
     </div>
   </div>
 
   <div id="mode" class="screen hidden">
     <div class="card">
-      <h1>เลือกระดับ</h1>
-      <button onmouseenter="playSfx(800)" onclick="startGame('easy')" style="background:var(--success); box-shadow:0 6px 0 #009476; width:100%;">ง่าย (1-20)</button>
-      <button onmouseenter="playSfx(800)" onclick="startGame('medium')" style="background:var(--warning); box-shadow:0 6px 0 #d4ac0d; width:100%;">ปานกลาง (เลข 2 หลัก)</button>
-      <button onmouseenter="playSfx(800)" onclick="startGame('hard')" style="background:var(--danger); box-shadow:0 6px 0 #d63031; width:100%;">ยาก (การคูณ)</button>
-      <div class="btn-group">
-        <button onmouseenter="playSfx(800)" class="secondary" onclick="changeScreen('mathTips2')" style="width:100%;">⬅️ ย้อนกลับไปหน้าคำแนะนำ</button>
+      <h2 style="color:var(--primary-dark)">ระดับความยาก</h2>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <button onclick="startGame('easy')">🟢 ง่าย (ประถม)</button>
+        <button onclick="startGame('medium')" style="background:#8e44ad; box-shadow: 0 6px 0 #703688;">🟡 ปานกลาง (ม.ต้น 🏫)</button>
+        <button onclick="startGame('hard')" style="background:var(--primary-dark); box-shadow: 0 6px 0 #4834d4;">🔴 ยาก (ม.ปลาย 🎓)</button>
+        <button class="secondary" onclick="changeScreen('mathGuide')">🔙 ย้อนกลับ</button>
       </div>
     </div>
   </div>
@@ -145,43 +196,78 @@
   <div id="game" class="screen hidden">
     <div class="card">
       <div class="timer-bar"><div id="timer-fill"></div></div>
-      <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:bold;">
-        <span>ข้อที่: <span id="qNum">1</span>/20</span>
-        <span style="color:var(--primary)">คะแนน: <span id="score">0</span></span>
+      <div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--primary-dark);">
+        <span id="qNum">ข้อที่ 1/20</span>
+        <span>⭐ <span id="score">0</span></span>
       </div>
-      <div id="questionText" class="question-box">? + ?</div>
-      
-      <div class="input-wrapper">
-        <input type="text" id="answerInput" inputmode="numeric" placeholder="?" autocomplete="off">
-      </div>
-
-      <button onmouseenter="playSfx(800)" onclick="checkAnswer()" style="width:100%; margin:0;">ส่งคำตอบ</button>
+      <div id="questionText" style="font-size:2.8rem; font-weight:600; margin:20px 0; min-height: 80px; display: flex; align-items: center; justify-content: center;">?</div>
+      <input type="text" id="answerInput" inputmode="numeric" placeholder="?" autocomplete="off">
+      <div id="bonus-label">โบนัส!</div>
+      <div id="comboBadge" class="combo-badge">COMBO x1.0</div>
+      <button onclick="checkAnswer()">ส่งคำตอบ</button>
     </div>
   </div>
 
   <div id="result" class="screen hidden">
     <div class="card">
-      <h1>เก่งมาก! 🏆</h1>
-      <div id="finalScore" style="font-size:4rem; color:var(--primary); font-weight:bold;">0</div>
-      <div id="statsSummary" style="text-align:left; background:#f8f9fa; padding:15px; border-radius:15px; margin:20px 0;"></div>
-      <button onmouseenter="playSfx(800)" onclick="location.reload()">🏠 กลับหน้าหลัก</button>
+      <h1>เก่งมาก! 🎉</h1>
+      <p>คะแนนรวม: <b id="finalScore" style="color:var(--primary-dark); font-size:2rem;">0</b></p>
+      <table class="rank-table" id="rankTable"></table>
+      <div id="statsSummary" style="margin:15px 0; font-size: 0.85rem;"></div>
+      <button onclick="location.reload()" style="background:var(--primary-dark);">🏠 กลับหน้าหลัก</button>
     </div>
   </div>
 
   <script>
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let audioCtx, isMuted = false;
     let currentScore = 0, currentQ = 0, correctAns = 0, timer, difficulty = 'easy';
-    let combo = 0, correctCount = 0, totalTime = 0, startTime;
+    let combo = 0, correctCount = 0, startTime, timeLimit = 12;
 
-    function playSfx(freq, type = 'sine', duration = 0.1) {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
+    function initAudio() {
+      if (audioCtx) return;
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      playRelaxingMusic();
+    }
+
+    function playRelaxingMusic() {
+      const notes = [261.63, 329.63, 392.00, 440.00, 523.25]; 
+      let lastNote = -1;
+      function playNextNote() {
+        if (isMuted) { setTimeout(playNextNote, 3000); return; }
+        let idx;
+        do { idx = Math.floor(Math.random() * notes.length); } while (idx === lastNote);
+        lastNote = idx;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(notes[idx], audioCtx.currentTime);
+        const vol = 0.02; 
+        gain.gain.setValueAtTime(0, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + 1);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 5);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 5.5);
+        setTimeout(playNextNote, 2500 + Math.random() * 2000);
+      }
+      playNextNote();
+    }
+
+    function toggleMusic() {
+      isMuted = !isMuted;
+      document.getElementById('music-control').textContent = isMuted ? '❌' : '🔊';
+    }
+
+    function playSfx(freq, type='sine') {
+      if (isMuted || !audioCtx) return;
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+      gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
       osc.connect(gain); gain.connect(audioCtx.destination);
-      osc.start(); osc.stop(audioCtx.currentTime + duration);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.2);
     }
 
     function changeScreen(id) {
@@ -189,8 +275,11 @@
       document.getElementById(id).classList.remove('hidden');
     }
 
+    function viewRanks() { displayRank('viewRankTable'); changeScreen('rankView'); }
+
     function startGame(mode) {
-      difficulty = mode; currentScore = 0; currentQ = 0; combo = 0; correctCount = 0; totalTime = 0;
+      difficulty = mode; currentScore = 0; currentQ = 0; combo = 0; correctCount = 0;
+      timeLimit = (mode === 'easy') ? 12 : (mode === 'medium' ? 20 : 40);
       changeScreen('game');
       nextQuestion();
     }
@@ -198,63 +287,201 @@
     function nextQuestion() {
       if (currentQ >= 20) { endGame(); return; }
       currentQ++;
-      document.getElementById('qNum').textContent = currentQ;
-      const input = document.getElementById('answerInput');
-      input.value = ''; input.focus();
+      document.getElementById('qNum').textContent = `ข้อที่ ${currentQ}/20`;
+      document.getElementById('answerInput').value = '';
+      document.getElementById('answerInput').focus();
+      document.getElementById('bonus-label').style.opacity = '0';
       
-      let a, b, op = '+';
-      if (difficulty === 'easy') { a = rand(1, 20); b = rand(1, 20); }
-      else if (difficulty === 'medium') { a = rand(10, 99); b = rand(10, 50); op = Math.random() > 0.5 ? '+' : '-'; }
-      else { a = rand(2, 12); b = rand(2, 12); op = '×'; }
-      
-      if (op === '-' && a < b) [a, b] = [b, a];
-      correctAns = (op === '+') ? a + b : (op === '-') ? a - b : a * b;
-      document.getElementById('questionText').textContent = `${a} ${op} ${b}`;
+      if(difficulty === 'hard') {
+        generateHardQuestion();
+      } else if(difficulty === 'medium') {
+        generateMediumQuestion();
+      } else {
+        let a = rand(1, 30), b = rand(1, 30);
+        let ops = ['+', '-'];
+        let op = ops[rand(0, 1)];
+        if (op === '-') {
+            if (a < b) [a, b] = [b, a];
+            correctAns = a - b;
+        } else {
+            correctAns = a + b;
+        }
+        document.getElementById('questionText').innerHTML = `${a} ${op} ${b}`;
+      }
       
       startTime = Date.now();
       startTimer();
+    }
+
+    function generateMediumQuestion() {
+      let type = rand(1, 6); // เพิ่มประเภทโจทย์
+      let qText = "";
+      switch(type) {
+        case 1: // การบวกเลขติดลบ
+          let a1 = rand(-25, 25), b1 = rand(-25, 25);
+          qText = `${a1 < 0 ? '('+a1+')' : a1} + ${b1 < 0 ? '('+b1+')' : b1}`; 
+          correctAns = a1 + b1;
+          break;
+        case 2: // การลบเลขติดลบ
+          let a2 = rand(-20, 20), b2 = rand(-20, 20);
+          qText = `${a2 < 0 ? '('+a2+')' : a2} - ${b2 < 0 ? '('+b2+')' : b2}`; 
+          correctAns = a2 - b2;
+          break;
+        case 3: // การคูณเบื้องต้น (รวมติดลบ)
+          let c = rand(2, 12), d = rand(-11, 11);
+          if (d === 0) d = 1;
+          qText = `${c} × ${d < 0 ? '('+d+')' : d}`; 
+          correctAns = c * d;
+          break;
+        case 4: // สมการชั้นเดียว
+          let x4 = rand(2, 15), coeff4 = rand(2, 6);
+          let res4 = x4 * coeff4;
+          qText = `หา x: ${coeff4}x = ${res4}`; 
+          correctAns = x4;
+          break;
+        case 5: // เลขยกกำลัง 2 (11-20)
+          let base5 = rand(11, 20);
+          qText = `${base5}<sup>2</sup> = ?`; 
+          correctAns = base5 * base5;
+          break;
+        case 6: // หารลงตัว
+          let ans6 = rand(2, 15), divisor6 = rand(2, 9);
+          let dividend6 = ans6 * divisor6;
+          qText = `${dividend6} ÷ ${divisor6} = ?`;
+          correctAns = ans6;
+          break;
+      }
+      document.getElementById('questionText').innerHTML = qText;
+    }
+
+    function generateHardQuestion() {
+      let type = rand(1, 8); // เพิ่มความหลากหลายเป็น 8 รูปแบบ
+      let qText = "";
+      switch(type) {
+        case 1: // สมการ 2 ขั้นตอน
+          let x1 = rand(1, 15), a1 = rand(2, 8), b1 = rand(-15, 15);
+          let res1 = (a1 * x1) + b1;
+          qText = `หา x: ${a1}x ${b1 >= 0 ? '+ ' + b1 : '- ' + Math.abs(b1)} = ${res1}`; 
+          correctAns = x1;
+          break;
+        case 2: // เลขยกกำลัง 3
+          let base2 = rand(2, 6);
+          let pwr2 = rand(3, 4);
+          qText = `${base2}<sup>${pwr2}</sup> = ?`; 
+          correctAns = Math.pow(base2, pwr2);
+          break;
+        case 3: // ตรีโกณมิติ (เพิ่มมุม)
+          const tri = [
+            {q:'sin 30°', a:0.5}, {q:'cos 60°', a:0.5}, {q:'sin 90°', a:1}, 
+            {q:'tan 45°', a:1}, {q:'cos 0°', a:1}, {q:'sin 0°', a:0},
+            {q:'cos 30°', a:0.9} // ใช้ค่าประมาณหรือเลขที่เข้าใจง่าย
+          ];
+          let pick = tri[rand(0, tri.length - 1)];
+          qText = `${pick.q} = ? (ทศนิยม 1 ตำแหน่ง)`; 
+          correctAns = pick.a;
+          break;
+        case 4: // รูทชั้นสูง
+          let rootBase = rand(13, 25);
+          qText = `√${rootBase * rootBase} = ?`; 
+          correctAns = rootBase;
+          break;
+        case 5: // Logarithm (ฐานสลับไปมา)
+          let lBases = [2, 3, 5, 10];
+          let lBase = lBases[rand(0, 3)];
+          let exp = rand(2, 4);
+          let val = Math.pow(lBase, exp);
+          qText = `log<sub>${lBase}</sub> ${val} = ?`; 
+          correctAns = exp;
+          break;
+        case 6: // ค่าสัมบูรณ์และการคำนวณ
+          let n6 = rand(-50, -10), m6 = rand(5, 20);
+          qText = `|${n6}| - ${m6} = ?`;
+          correctAns = Math.abs(n6) - m6;
+          break;
+        case 7: // เลขยกกำลังติดลบ
+          let b7 = 2, p7 = -1;
+          let r7 = rand(1, 3);
+          if (r7 === 1) { qText = `2<sup>-1</sup> = ? (ทศนิยม)`; correctAns = 0.5; }
+          else if (r7 === 2) { qText = `5<sup>-1</sup> = ? (ทศนิยม)`; correctAns = 0.2; }
+          else { qText = `4<sup>-1</sup> = ? (ทศนิยม)`; correctAns = 0.25; }
+          break;
+        case 8: // แฟกทอเรียลเบื้องต้น
+          let fNum = rand(3, 5);
+          qText = `${fNum}! = ?`;
+          let fRes = 1; for(let i=1; i<=fNum; i++) fRes *= i;
+          correctAns = fRes;
+          break;
+      }
+      document.getElementById('questionText').innerHTML = qText;
     }
 
     function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
     function startTimer() {
       clearInterval(timer);
-      let timeLimit = difficulty === 'hard' ? 7 : 12;
-      let timeLeft = timeLimit;
       const bar = document.getElementById('timer-fill');
       bar.style.transition = 'none'; bar.style.width = '100%';
       setTimeout(() => { bar.style.transition = `width ${timeLimit}s linear`; bar.style.width = '0%'; }, 50);
-      timer = setInterval(() => { timeLeft--; if (timeLeft <= 0) processResult(false); }, 1000);
+      let t = timeLimit;
+      timer = setInterval(() => { t--; if(t <= 0) checkAnswer(); }, 1000);
     }
 
     function checkAnswer() {
-      const input = document.getElementById('answerInput');
-      if (input.value.trim() === "") return;
-      processResult(parseInt(input.value) === correctAns);
+      const val = parseFloat(document.getElementById('answerInput').value);
+      processResult(val === correctAns);
     }
 
     function processResult(isCorrect) {
       clearInterval(timer);
-      totalTime += (Date.now() - startTime) / 1000;
+      const badge = document.getElementById('comboBadge');
       if (isCorrect) {
-        combo++; correctCount++;
-        currentScore += Math.round(10 * (1 + Math.min(combo, 10) * 0.1));
-        playSfx(600 + (combo * 40), 'triangle', 0.15);
+        correctCount++; combo++;
+        let mult = 1 + (Math.min(combo, 10) * 0.1);
+        let bonusThreshold = (difficulty === 'hard' ? 10 : (difficulty === 'medium' ? 7 : 5));
+        let bonus = (Date.now() - startTime) / 1000 < bonusThreshold ? 5 : 0;
+        if(bonus > 0) document.getElementById('bonus-label').style.opacity = '1';
+        currentScore += Math.round(((difficulty === 'easy' ? 10 : (difficulty === 'medium' ? 15 : 20)) + bonus) * mult);
+        badge.textContent = `COMBO x${mult.toFixed(1)} 🔥`;
+        badge.classList.add('combo-active');
+        playSfx(500 + (combo * 50));
       } else {
         combo = 0; currentScore = Math.max(0, currentScore - 5);
-        playSfx(150, 'sawtooth', 0.2);
+        badge.textContent = `COMBO x1.0`;
+        badge.classList.remove('combo-active');
+        document.getElementById('mainBody').classList.add('shake-screen');
+        setTimeout(() => document.getElementById('mainBody').classList.remove('shake-screen'), 400);
+        playSfx(150, 'sawtooth');
       }
       document.getElementById('score').textContent = currentScore;
       setTimeout(nextQuestion, 600);
     }
 
     function endGame() {
+      saveRank(currentScore);
+      displayRank('rankTable');
       document.getElementById('finalScore').textContent = currentScore;
-      document.getElementById('statsSummary').innerHTML = `
-        🎯 ตอบถูกทั้งหมด: ${correctCount} / 20 ข้อ<br>
-        ⚡ ความเร็วเฉลี่ย: ${(totalTime / 20).toFixed(2)} วินาที/ข้อ
-      `;
+      document.getElementById('statsSummary').innerHTML = `✅ ถูก ${correctCount}/20 | โหมด: ${difficulty === 'easy' ? 'ง่าย' : (difficulty === 'medium' ? 'ปานกลาง' : 'ยาก')}`;
       changeScreen('result');
+    }
+
+    function saveRank(score) {
+      let ranks = JSON.parse(localStorage.getItem('mathRanks') || "[]");
+      ranks.push({score: score, date: new Date().toLocaleDateString()});
+      ranks.sort((a, b) => b.score - a.score);
+      ranks = ranks.slice(0, 5);
+      localStorage.setItem('mathRanks', JSON.stringify(ranks));
+    }
+
+    function displayRank(tableId) {
+      let ranks = JSON.parse(localStorage.getItem('mathRanks') || "[]");
+      let html = ranks.map((r, i) => `
+        <tr class="${i === 0 ? 'top-rank' : ''}">
+          <td>${i === 0 ? '🥇' : i+1}</td>
+          <td>${r.score} แต้ม</td>
+          <td style="font-size:0.7rem; color:#aaa;">${r.date}</td>
+        </tr>
+      `).join('');
+      document.getElementById(tableId).innerHTML = html || "<tr><td colspan='3'>ไม่มีข้อมูล</td></tr>";
     }
 
     document.getElementById('answerInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
