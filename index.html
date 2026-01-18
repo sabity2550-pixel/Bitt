@@ -3,138 +3,179 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
-  <title>Mathletics - Fun Math Game</title>
+  <title>Mathletics - Ultra Neon RGB Edition</title>
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Fredoka+One&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #a29bfe;
-      --primary-dark: #6c5ce7;
-      --bg-color: #f8f7ff;
-      --card-bg: #ffffff;
-      --success: #00b894;
-      --danger: #ff7675;
-      --gold: #f1c40f;
+      --primary: #6c5ce7;
+      --deep-purple: #1e1b4b;
+      --neon-purple: #a29bfe;
+      --neon-green: #00ff88;
+      --neon-orange: #ff9f43;
+      --danger: #ff4757;
+      --card-bg: rgba(30, 27, 75, 0.85);
+      --white: #ffffff;
     }
 
     body {
       font-family: 'Kanit', sans-serif;
-      margin: 0; background: var(--bg-color);
+      margin: 0; 
+      background: #0f172a;
+      background-image: 
+        linear-gradient(rgba(108, 92, 231, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(108, 92, 231, 0.1) 1px, transparent 1px);
+      background-size: 40px 40px;
       display: flex; align-items: center; justify-content: center;
       height: 100vh; overflow: hidden; touch-action: manipulation;
     }
 
+    @keyframes rgbGlow {
+      0% { border-color: #ff0000; box-shadow: 0 0 20px #ff0000; }
+      20% { border-color: #00ff00; box-shadow: 0 0 25px #00ff00; }
+      40% { border-color: #00ffff; box-shadow: 0 0 20px #00ffff; }
+      60% { border-color: #0000ff; box-shadow: 0 0 25px #0000ff; }
+      80% { border-color: #ff00ff; box-shadow: 0 0 20px #ff00ff; }
+      100% { border-color: #ffff00; box-shadow: 0 0 25px #ffff00; }
+    }
+
+    .streak-aura-rgb { 
+      animation: rgbGlow 2s linear infinite !important; 
+      border-width: 3px !important;
+    }
+
+    body::before {
+      content: ''; position: absolute; width: 300px; height: 300px;
+      background: var(--primary); filter: blur(150px);
+      border-radius: 50%; top: -100px; left: -100px; opacity: 0.3; z-index: -1;
+    }
+
+    #fireworksCanvas {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 999;
+    }
+
     .logo-text {
       font-family: 'Fredoka One', cursive;
-      font-size: 3.5rem;
-      letter-spacing: 2px;
-      margin-bottom: 10px;
-      display: inline-block;
+      font-size: 3.5rem; letter-spacing: 2px;
+      margin-bottom: 5px; display: inline-block;
+      color: var(--white);
+      text-shadow: 0 0 10px var(--neon-purple), 0 0 20px var(--primary);
     }
-    .logo-text span:nth-child(1) { color: #ed7d7d; }
-    .logo-text span:nth-child(2) { color: #f9b872; }
-    .logo-text span:nth-child(3) { color: #ffca85; }
-    .logo-text span:nth-child(4) { color: #ffe68d; }
-    .logo-text span:nth-child(5) { color: #a8e6cf; }
-    .logo-text span:nth-child(6) { color: #92d5e6; }
-    .logo-text span:nth-child(7) { color: #a29bfe; }
-    .logo-text span:nth-child(8) { color: #c3e0a0; }
-    .logo-text span:nth-child(9) { color: #ffd372; }
-    .logo-text span:nth-child(10) { color: #f9b872; }
+    .logo-text span { color: var(--neon-green); }
 
     #music-control {
       position: fixed; top: 20px; right: 20px; z-index: 1000;
-      background: white; border: 2px solid var(--primary);
-      width: 45px; height: 45px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1); border: 1px solid var(--neon-purple);
+      width: 48px; height: 48px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      font-size: 1.2rem; transition: 0.2s;
+      cursor: pointer; color: white;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 0 15px rgba(108, 92, 231, 0.3);
+      transition: 0.3s;
     }
+
+    .game-hud { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; width: 100%; max-width: 480px; }
+    .hearts-ui { color: var(--danger); font-size: 1.2rem; text-shadow: 0 0 10px var(--danger); }
+    .items-ui { display: flex; gap: 5px; }
+    .item-btn { 
+      background: rgba(255,255,255,0.1); border: 1px solid var(--neon-purple); 
+      color: white; padding: 4px 8px; border-radius: 8px; font-size: 0.7rem; cursor: pointer;
+    }
+    .item-btn:disabled { opacity: 0.3; cursor: default; }
 
     .screen {
       position: absolute; width: 100%; max-width: 480px;
       padding: 20px; box-sizing: border-box; text-align: center;
-      transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    .hidden { display: none !important; opacity: 0; transform: scale(0.9); }
+    .hidden { display: none !important; opacity: 0; transform: scale(0.9) translateY(20px); }
 
     .card {
-      background: var(--card-bg); padding: 30px 25px;
-      border-radius: 35px; box-shadow: 0 20px 40px rgba(108, 92, 231, 0.1);
-      border-bottom: 8px solid #efecfd;
+      background: var(--card-bg); padding: 40px 30px;
+      border-radius: 40px; 
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(162, 155, 254, 0.2);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      position: relative; z-index: 10;
     }
 
     button {
-      background: var(--primary); color: white; border: none;
-      padding: 18px 25px; border-radius: 22px; font-size: 1.1rem;
+      background: linear-gradient(135deg, var(--primary), var(--neon-purple));
+      color: white; border: none;
+      padding: 16px 25px; border-radius: 18px; font-size: 1.15rem;
       font-weight: 600; cursor: pointer; transition: 0.2s;
-      box-shadow: 0 6px 0 #8c85e6; width: 100%; font-family: 'Kanit';
-      margin-bottom: 10px;
+      box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+      width: 100%; font-family: 'Kanit';
+      margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1);
     }
-    button.secondary { background: #b2bec3; box-shadow: 0 6px 0 #95a5a6; }
-    button.rank-btn { background: #8e44ad; box-shadow: 0 6px 0 #703688; }
-    button:active { transform: translateY(3px); box-shadow: 0 2px 0 #8c85e6; }
+    button.secondary { background: #475569; }
+    button.rank-btn { background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #451a03; }
+    button.share-btn { background: linear-gradient(135deg, #00d2ff, #3a7bd5); margin-top: 10px; }
 
-    .info-box { 
-      text-align: left; 
-      background: #fdfbff; 
-      padding: 20px; 
-      border-radius: 25px; 
-      margin-bottom: 20px; 
-      border: 1px solid #f0edff; 
-      font-size: 1.05rem; 
-      line-height: 1.6;
-      max-height: 300px; 
-      overflow-y: auto;
-    }
-    
     input[type="text"] {
-      width: 100%; padding: 18px; font-size: 2.2rem;
-      border: 4px solid #efecfd; border-radius: 25px;
-      text-align: center; color: var(--primary-dark); font-weight: 600;
-      background: #fdfbff; outline: none; box-sizing: border-box;
+      width: 100%; padding: 15px; font-size: 3rem;
+      border: 3px solid rgba(162, 155, 254, 0.3); border-radius: 20px;
+      text-align: center; color: var(--neon-green); font-weight: 600;
+      background: rgba(0,0,0,0.4); outline: none; box-sizing: border-box;
+      font-family: 'Fredoka One'; text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
     }
 
-    .timer-bar { width: 100%; height: 12px; background: #eee; border-radius: 10px; overflow: hidden; margin-bottom: 15px; }
-    #timer-fill { height: 100%; background: var(--primary); width: 100%; }
-    #bonus-label { color: var(--success); font-weight: bold; opacity: 0; height: 20px; }
-    .combo-badge { display: inline-block; padding: 5px 15px; border-radius: 15px; background: #eee; color: #777; font-size: 0.9rem; margin-top: 10px; }
-    .combo-active { background: var(--primary-dark); color: white; transform: scale(1.1); }
+    .timer-bar { width: 100%; height: 12px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin-bottom: 20px; position: relative;}
+    #timer-fill { height: 100%; background: linear-gradient(90deg, var(--neon-green), var(--neon-purple)); width: 100%; }
+    
+    /* --- [ใหม่] Ghost Mode UI --- */
+    #ghost-marker {
+      position: absolute; top: 0; width: 3px; height: 100%;
+      background: white; box-shadow: 0 0 8px white;
+      display: none; transition: left 0.3s;
+    }
 
-    .rank-table { width: 100%; margin-top: 15px; border-collapse: collapse; background: #fdfbff; border-radius: 15px; overflow: hidden; }
-    .rank-table tr { border-bottom: 1px solid #f0edff; }
-    .rank-table td { padding: 12px; font-size: 1rem; }
-    .top-rank { color: var(--gold); font-weight: bold; background: #fffdf0; }
-    .shake-screen { animation: screenShake 0.4s; }
-    @keyframes screenShake {
+    .timer-danger { background: var(--danger) !important; animation: blink 0.5s infinite; }
+    @keyframes blink { 50% { opacity: 0.5; } }
+
+    .rank-table { width: 100%; margin-top: 15px; border-collapse: separate; border-spacing: 0 8px; }
+    .rank-table tr { background: rgba(255,255,255,0.05); }
+    .rank-table td { padding: 15px; color: white; }
+
+    #badge-ui { display: inline-block; background: var(--neon-orange); color: black; padding: 4px 12px; border-radius: 8px; font-weight: bold; margin-bottom: 10px; font-size: 0.9rem; }
+
+    /* --- [ใหม่] Global Rank UI --- */
+    .global-percent {
+      font-size: 0.9rem; color: var(--neon-green);
+      background: rgba(0, 255, 136, 0.1);
+      padding: 5px 15px; border-radius: 20px;
+      display: inline-block; margin-bottom: 15px;
+      border: 1px solid rgba(0, 255, 136, 0.3);
+    }
+
+    @keyframes shake {
       0%, 100% { transform: translate(0, 0); }
-      25% { transform: translate(-5px, 5px); }
-      50% { transform: translate(5px, -5px); }
-      75% { transform: translate(-5px, -5px); }
+      25% { transform: translate(-8px, 0); }
+      75% { transform: translate(8px, 0); }
     }
+    .shake { animation: shake 0.3s; }
   </style>
 </head>
 <body id="mainBody">
 
+  <canvas id="fireworksCanvas"></canvas>
   <div id="music-control" onclick="toggleMusic()">🔊</div>
 
   <div id="intro" class="screen">
     <div class="card">
-      <div class="logo-text">
-        <span>M</span><span>A</span><span>T</span><span>H</span><span>L</span><span>E</span><span>T</span><span>I</span><span>C</span><span>S</span>
-      </div>
-      <p style="margin-top:0; color:#636e72;">ยินดีต้อนรับสู่โลกแห่งตัวเลข</p>
-      <button onclick="initAudio(); changeScreen('mathTips1')">เข้าสู่คำแนะนำ ➡️</button>
-      <button class="rank-btn" onclick="viewRanks()">🏆 ดูอันดับ Rank ของฉัน</button>
+      <div class="logo-text">MATH<span>LETICS</span></div>
+      <p style="color: #94a3b8; margin-top:0;">ปลดล็อกขีดจำกัดพลังสมองของคุณ</p>
+      <button onclick="initAudio(); changeScreen('mathTips1')">เข้าสู่โหมดเนื้อเรื่อง 🚀</button>
+      <button class="rank-btn" onclick="viewRanks()">🏆 บันทึกยอดฝีมือ</button>
     </div>
   </div>
 
   <div id="rankView" class="screen hidden">
     <div class="card">
-      <div style="font-size: 3rem;">🏆</div>
-      <h2 style="color:var(--primary-dark)">อันดับสูงสุดของคุณ</h2>
+      <h2 style="color:var(--neon-purple); margin-top:0;">HALL OF FAME</h2>
       <table class="rank-table" id="viewRankTable"></table>
-      <div style="margin-top: 20px;">
+      <div style="margin-top: 25px;">
         <button class="secondary" onclick="changeScreen('intro')">🔙 ย้อนกลับ</button>
       </div>
     </div>
@@ -142,275 +183,242 @@
 
   <div id="mathTips1" class="screen hidden">
     <div class="card">
-      <h2>📖 วิธีเล่น & โบนัส</h2>
-      <div class="info-box">
-        • ตอบให้ไวเพื่อรับ <b>โบนัสความเร็ว</b><br>
-        • ตอบถูกต่อเนื่องเพื่อสะสม <b>Combo</b> ตัวคูณคะแนน<br>
-        • ยิ่งโหมดยาก คะแนนต่อข้อจะยิ่งสูง!<br>
-        • ดนตรีเบาๆ ช่วยให้คุณมีสมาธิมากขึ้น
+      <h2 style="color:var(--neon-green)">📖 ภารกิจคำนวณ</h2>
+      <div style="text-align: left; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 20px; margin-bottom: 20px; color: #cbd5e1; font-size: 0.9rem;">
+        • <b>Hearts:</b> คุณมีหัวใจ 3 ดวง ตอบผิดเสีย 1 ดวง<br>
+        • <b>Items:</b> ใช้ Slow เพื่อเพิ่มเวลา หรือ x2 เพื่อคะแนนคูณสอง<br>
+        • <b>RGB Streak:</b> ตอบถูก 5 ข้อรวด เพื่อเปิดโหมดไฟสีรุ้ง!<br>
+        • <b>Ghost:</b> แข่งกับเวลาที่เร็วที่สุดของคุณ (เส้นสีขาว)
       </div>
       <div style="display:flex; gap:10px;">
         <button class="secondary" onclick="changeScreen('intro')">ย้อนกลับ</button>
-        <button onclick="changeScreen('mathGuide')">ต่อไป 💡</button>
+        <button onclick="changeScreen('mathGuide')">ต่อไป ➡️</button>
       </div>
     </div>
   </div>
 
   <div id="mathGuide" class="screen hidden">
     <div class="card">
-      <h2 style="color:var(--primary-dark)">💡 เกร็ดน่ารู้สู่ชัยชนะ</h2>
-      <div class="info-box">
-        <b style="font-size: 1.2rem; color: #00b894;">🟢 โหมดง่าย:</b><br>
-        • เลขอะไรคูณ 0 ได้ 0 เสมอ!<br>
-        • เทคนิคบวก 9: ให้ +10 แล้วหักออก 1 จะไวขึ้นมาก<br><br>
-        
-        <b style="font-size: 1.2rem; color: #8e44ad;">🟡 โหมดปานกลาง:</b><br>
-        • กฎเครื่องหมาย: ลบ เจอกับ ลบ กลายเป็น <b>บวก</b>!<br>
-        • การย้ายข้างสมการ: ย้ายจาก + ไปเป็น -, ย้ายจาก × ไปเป็น ÷<br>
-        • เลขยกกำลังพื้นฐาน: 11²=121, 12²=144, 15²=225<br><br>
-        
-        <b style="font-size: 1.2rem; color: var(--primary-dark);">🔴 โหมดระดับยาก:</b><br>
-        • <b>ตรีโกณ:</b> ใช้กฎมือซ้ายช่วยจำ sin(ซ้าย) cos(ขวา)<br>
-        • <b>Logarithm:</b> logₐ a = 1 และ logₐ 1 = 0 เสมอ<br>
-        • <b>เลขยกกำลังติดลบ:</b> a⁻ⁿ คือเศษส่วน เช่น 2⁻¹ = 1/2
+      <h2 style="color:var(--neon-orange)">💡 ข้อมูลเลเวล</h2>
+      <div style="text-align: left; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 20px; margin-bottom: 20px; color: #cbd5e1;">
+        <b style="color:var(--neon-green)">Easy:</b> บวก-ลบเบื้องต้น (หัวใจ 3)<br><br>
+        <b style="color:var(--neon-orange)">Medium:</b> สมการ x และเลขติดลบ (หัวใจ 3)<br><br>
+        <b style="color:var(--danger)">Hard:</b> ตรีโกณ และ Log ขั้นสูง! (หัวใจ 3)
       </div>
       <div style="display:flex; gap:10px;">
         <button class="secondary" onclick="changeScreen('mathTips1')">ย้อนกลับ</button>
-        <button onclick="changeScreen('mode')">ไปเลือกโหมด 🎮</button>
+        <button onclick="changeScreen('mode')">เลือกโหมด 🎮</button>
       </div>
     </div>
   </div>
 
   <div id="mode" class="screen hidden">
     <div class="card">
-      <h2 style="color:var(--primary-dark)">ระดับความยาก</h2>
+      <h2 style="color:var(--white)">เลือกระดับพลังงาน</h2>
       <div style="display:flex; flex-direction:column; gap:10px;">
-        <button onclick="startGame('easy')">🟢 ง่าย (ประถม)</button>
-        <button onclick="startGame('medium')" style="background:#8e44ad; box-shadow: 0 6px 0 #703688;">🟡 ปานกลาง (ม.ต้น 🏫)</button>
-        <button onclick="startGame('hard')" style="background:var(--primary-dark); box-shadow: 0 6px 0 #4834d4;">🔴 ยาก (ม.ปลาย 🎓)</button>
-        <button class="secondary" onclick="changeScreen('mathGuide')">🔙 ย้อนกลับ</button>
+        <button onclick="startGame('easy')" style="background:var(--neon-green); color:#064e3b;">🟢 ฝึกหัด (Easy)</button>
+        <button onclick="startGame('medium')" style="background:var(--neon-orange); color:#431407;">🟡 นักสู้ (Medium)</button>
+        <button onclick="startGame('hard')" style="background:var(--primary);">🔴 ปรมาจารย์ (Hard)</button>
+        <button class="secondary" onclick="changeScreen('mathGuide')">ย้อนกลับ</button>
       </div>
     </div>
   </div>
 
   <div id="game" class="screen hidden">
-    <div class="card">
-      <div class="timer-bar"><div id="timer-fill"></div></div>
-      <div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--primary-dark);">
-        <span id="qNum">ข้อที่ 1/20</span>
-        <span>⭐ <span id="score">0</span></span>
+    <div class="game-hud">
+        <div class="hearts-ui" id="hearts-display">❤️❤️❤️</div>
+        <div class="items-ui">
+            <button class="item-btn" id="btn-slow" onclick="useSlow()">⏳ Slow (1)</button>
+            <button class="item-btn" id="btn-double" onclick="useDouble()">⭐ x2 (1)</button>
+        </div>
+    </div>
+    <div class="card" id="gameCard">
+      <div class="timer-bar">
+        <div id="timer-fill"></div>
+        <div id="ghost-marker"></div>
       </div>
-      <div id="questionText" style="font-size:2.8rem; font-weight:600; margin:20px 0; min-height: 80px; display: flex; align-items: center; justify-content: center;">?</div>
+      <div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--neon-purple); font-size: 0.85rem;">
+        <span id="qNum">QUEST: 1/20</span>
+        <span>⭐ SCORE: <span id="score">0</span></span>
+      </div>
+      <div id="questionText" style="font-size:3.5rem; font-weight:600; margin:20px 0; font-family: 'Fredoka One'; color: white;">?</div>
       <input type="text" id="answerInput" inputmode="numeric" placeholder="?" autocomplete="off">
-      <div id="bonus-label">โบนัส!</div>
+      <div id="bonus-label" style="color: var(--neon-green); font-weight: bold; opacity: 0; font-size: 0.8rem;">SYSTEM CHARGED: BONUS!</div>
       <div id="comboBadge" class="combo-badge">COMBO x1.0</div>
-      <button onclick="checkAnswer()">ส่งคำตอบ</button>
+      <button id="submitBtn" onclick="checkAnswer()" style="margin-top: 20px;">ยืนยันคำตอบ</button>
     </div>
   </div>
 
   <div id="result" class="screen hidden">
     <div class="card">
-      <h1>เก่งมาก! 🎉</h1>
-      <p>คะแนนรวม: <b id="finalScore" style="color:var(--primary-dark); font-size:2rem;">0</b></p>
+      <div id="badge-ui">PRO CALCULATOR</div>
+      <h1 id="congratsText" style="color:var(--neon-green); margin-top:0;">MISSION COMPLETE!</h1>
+      
+      <div class="global-percent" id="globalRankText">คุณเก่งกว่าผู้เล่น 0% ของโลก</div>
+      
+      <p style="color:#94a3b8;">คะแนนรวมที่ได้รับ</p>
+      <div id="finalScore" style="color:var(--white); font-size:4rem; font-weight:bold; font-family: 'Fredoka One'; margin-bottom: 20px;">0</div>
+      
       <table class="rank-table" id="rankTable"></table>
-      <div id="statsSummary" style="margin:15px 0; font-size: 0.85rem;"></div>
-      <button onclick="location.reload()" style="background:var(--primary-dark);">🏠 กลับหน้าหลัก</button>
+      <div id="statsSummary" style="margin:20px 0; color:var(--neon-purple); font-weight:bold;"></div>
+      
+      <button class="share-btn" onclick="shareAchievement()">📸 แชร์ความสำเร็จ</button>
+      <button onclick="location.reload()" style="background:var(--primary);">🏠 เล่นใหม่อีกครั้ง</button>
     </div>
   </div>
 
   <script>
     let audioCtx, isMuted = false;
     let currentScore = 0, currentQ = 0, correctAns = 0, timer, difficulty = 'easy';
-    let combo = 0, correctCount = 0, startTime, timeLimit = 12;
+    let combo = 0, correctCount = 0, startTime, timeLimit = 12, lives = 3;
+    let musicStep = 0, items = { slow: 1, double: 1 }, activeDouble = false, activeSlow = false;
+    
+    // Ghost Mode Data
+    let bestTimes = JSON.parse(localStorage.getItem('mathBestTimes') || "{}");
 
-    function initAudio() {
-      if (audioCtx) return;
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      playRelaxingMusic();
-    }
-
-    function playRelaxingMusic() {
-      const notes = [261.63, 329.63, 392.00, 440.00, 523.25]; 
-      let lastNote = -1;
-      function playNextNote() {
-        if (isMuted) { setTimeout(playNextNote, 3000); return; }
-        let idx;
-        do { idx = Math.floor(Math.random() * notes.length); } while (idx === lastNote);
-        lastNote = idx;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(notes[idx], audioCtx.currentTime);
-        const vol = 0.02; 
-        gain.gain.setValueAtTime(0, audioCtx.currentTime);
-        gain.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + 1);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 5);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 5.5);
-        setTimeout(playNextNote, 2500 + Math.random() * 2000);
+    function initAudio() { if (audioCtx) return; audioCtx = new (window.AudioContext || window.webkitAudioContext)(); playFunMusic(); }
+    
+    function playFunMusic() {
+      const scale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
+      function playStep() {
+        if (isMuted || !audioCtx) { setTimeout(playStep, 500); return; }
+        const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+        let speed = Math.max(150, 400 - (combo * 20));
+        let note = scale[musicStep % scale.length];
+        if (combo > 5) note *= 2;
+        osc.type = combo > 10 ? 'square' : 'triangle';
+        osc.frequency.setValueAtTime(note, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+        musicStep++; setTimeout(playStep, speed);
       }
-      playNextNote();
+      playStep();
     }
 
-    function toggleMusic() {
-      isMuted = !isMuted;
-      document.getElementById('music-control').textContent = isMuted ? '❌' : '🔊';
-    }
-
-    function playSfx(freq, type='sine') {
+    function playSfx(freq, type='sine', duration=0.2) {
       if (isMuted || !audioCtx) return;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
+      const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
       osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
       osc.connect(gain); gain.connect(audioCtx.destination);
-      osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+      osc.start(); osc.stop(audioCtx.currentTime + duration);
     }
 
-    function changeScreen(id) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
+    const canvas = document.getElementById('fireworksCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor(x, y, color) {
+        this.x = x; this.y = y; this.color = color;
+        this.velocity = { x: (Math.random() - 0.5) * 10, y: (Math.random() - 0.5) * 10 };
+        this.alpha = 1; this.friction = 0.95;
+      }
+      draw() { ctx.globalAlpha = this.alpha; ctx.beginPath(); ctx.arc(this.x, this.y, 4, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.fill(); }
+      update() { this.velocity.x *= this.friction; this.velocity.y *= this.friction; this.x += this.velocity.x; this.y += this.velocity.y; this.alpha -= 0.015; }
     }
 
+    function createFirework() {
+      const x = Math.random() * canvas.width; const y = Math.random() * (canvas.height * 0.5);
+      const color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+      for (let i = 0; i < 40; i++) particles.push(new Particle(x, y, color));
+      playSfx(200 + Math.random() * 400, 'sine', 0.5);
+    }
+
+    function animateFireworks() {
+      if (document.getElementById('result').classList.contains('hidden')) return;
+      requestAnimationFrame(animateFireworks);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p, i) => { if (p.alpha <= 0) particles.splice(i, 1); else { p.update(); p.draw(); } });
+      if (Math.random() < 0.08) createFirework();
+    }
+
+    function toggleMusic() { isMuted = !isMuted; document.getElementById('music-control').textContent = isMuted ? '❌' : '🔊'; }
+    function changeScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
     function viewRanks() { displayRank('viewRankTable'); changeScreen('rankView'); }
 
+    function useSlow() { if(items.slow > 0) { items.slow--; activeSlow = true; updateHUD(); playSfx(300); } }
+    function useDouble() { if(items.double > 0) { items.double--; activeDouble = true; updateHUD(); playSfx(800); } }
+    function updateHUD() {
+        document.getElementById('hearts-display').textContent = "❤️".repeat(lives);
+        document.getElementById('btn-slow').textContent = `⏳ Slow (${items.slow})`;
+        document.getElementById('btn-double').textContent = `⭐ x2 (${items.double})`;
+        document.getElementById('btn-slow').disabled = items.slow <= 0;
+        document.getElementById('btn-double').disabled = items.double <= 0;
+    }
+
     function startGame(mode) {
-      difficulty = mode; currentScore = 0; currentQ = 0; combo = 0; correctCount = 0;
-      timeLimit = (mode === 'easy') ? 12 : (mode === 'medium' ? 20 : 40);
+      difficulty = mode; currentScore = 0; currentQ = 0; combo = 0; correctCount = 0; lives = 3; items = {slow: 1, double: 1};
+      timeLimit = (mode === 'easy') ? 10 : (mode === 'medium' ? 18 : 35);
+      updateHUD();
       changeScreen('game');
       nextQuestion();
     }
 
     function nextQuestion() {
-      if (currentQ >= 20) { endGame(); return; }
+      if (currentQ >= 20 || lives <= 0) { endGame(); return; }
       currentQ++;
-      document.getElementById('qNum').textContent = `ข้อที่ ${currentQ}/20`;
+      document.getElementById('qNum').textContent = `QUEST: ${currentQ}/20`;
       document.getElementById('answerInput').value = '';
       document.getElementById('answerInput').focus();
       document.getElementById('bonus-label').style.opacity = '0';
       
-      if(difficulty === 'hard') {
-        generateHardQuestion();
-      } else if(difficulty === 'medium') {
-        generateMediumQuestion();
+      const card = document.getElementById('gameCard');
+      if(combo >= 5) card.classList.add('streak-aura-rgb');
+      else card.classList.remove('streak-aura-rgb');
+
+      // Ghost Mode Logic
+      const ghost = document.getElementById('ghost-marker');
+      if(bestTimes[difficulty]) {
+        ghost.style.display = 'block';
+        ghost.style.left = (100 - (bestTimes[difficulty] / timeLimit * 100)) + "%";
       } else {
+        ghost.style.display = 'none';
+      }
+
+      if(difficulty === 'hard') generateHardQuestion();
+      else if(difficulty === 'medium') generateMediumQuestion();
+      else {
         let a = rand(1, 30), b = rand(1, 30);
-        let ops = ['+', '-'];
-        let op = ops[rand(0, 1)];
-        if (op === '-') {
-            if (a < b) [a, b] = [b, a];
-            correctAns = a - b;
-        } else {
-            correctAns = a + b;
-        }
+        let op = ['+', '-'][rand(0, 1)];
+        if (op === '-') { if (a < b) [a, b] = [b, a]; correctAns = a - b; }
+        else { correctAns = a + b; }
         document.getElementById('questionText').innerHTML = `${a} ${op} ${b}`;
       }
-      
       startTime = Date.now();
       startTimer();
     }
 
     function generateMediumQuestion() {
-      let type = rand(1, 6); // เพิ่มประเภทโจทย์
-      let qText = "";
+      let type = rand(1, 6); let qText = "";
       switch(type) {
-        case 1: // การบวกเลขติดลบ
-          let a1 = rand(-25, 25), b1 = rand(-25, 25);
-          qText = `${a1 < 0 ? '('+a1+')' : a1} + ${b1 < 0 ? '('+b1+')' : b1}`; 
-          correctAns = a1 + b1;
-          break;
-        case 2: // การลบเลขติดลบ
-          let a2 = rand(-20, 20), b2 = rand(-20, 20);
-          qText = `${a2 < 0 ? '('+a2+')' : a2} - ${b2 < 0 ? '('+b2+')' : b2}`; 
-          correctAns = a2 - b2;
-          break;
-        case 3: // การคูณเบื้องต้น (รวมติดลบ)
-          let c = rand(2, 12), d = rand(-11, 11);
-          if (d === 0) d = 1;
-          qText = `${c} × ${d < 0 ? '('+d+')' : d}`; 
-          correctAns = c * d;
-          break;
-        case 4: // สมการชั้นเดียว
-          let x4 = rand(2, 15), coeff4 = rand(2, 6);
-          let res4 = x4 * coeff4;
-          qText = `หา x: ${coeff4}x = ${res4}`; 
-          correctAns = x4;
-          break;
-        case 5: // เลขยกกำลัง 2 (11-20)
-          let base5 = rand(11, 20);
-          qText = `${base5}<sup>2</sup> = ?`; 
-          correctAns = base5 * base5;
-          break;
-        case 6: // หารลงตัว
-          let ans6 = rand(2, 15), divisor6 = rand(2, 9);
-          let dividend6 = ans6 * divisor6;
-          qText = `${dividend6} ÷ ${divisor6} = ?`;
-          correctAns = ans6;
-          break;
+        case 1: let a1 = rand(-25, 25), b1 = rand(-25, 25); qText = `${a1 < 0 ? '('+a1+')' : a1} + ${b1 < 0 ? '('+b1+')' : b1}`; correctAns = a1 + b1; break;
+        case 2: let a2 = rand(-20, 20), b2 = rand(-20, 20); qText = `${a2 < 0 ? '('+a2+')' : a2} - ${b2 < 0 ? '('+b2+')' : b2}`; correctAns = a2 - b2; break;
+        case 3: let c = rand(2, 12), d = rand(-11, 11); if (d === 0) d = 1; qText = `${c} × ${d < 0 ? '('+d+')' : d}`; correctAns = c * d; break;
+        case 4: let x4 = rand(2, 15), coeff4 = rand(2, 6); qText = `หา x: ${coeff4}x = ${coeff4*x4}`; correctAns = x4; break;
+        case 5: let base5 = rand(11, 20); qText = `${base5}<sup>2</sup> = ?`; correctAns = base5 * base5; break;
+        case 6: let ans6 = rand(2, 15), div6 = rand(2, 9); qText = `${ans6*div6} ÷ ${div6} = ?`; correctAns = ans6; break;
       }
       document.getElementById('questionText').innerHTML = qText;
     }
 
     function generateHardQuestion() {
-      let type = rand(1, 8); // เพิ่มความหลากหลายเป็น 8 รูปแบบ
-      let qText = "";
+      let type = rand(1, 8); let qText = "";
       switch(type) {
-        case 1: // สมการ 2 ขั้นตอน
-          let x1 = rand(1, 15), a1 = rand(2, 8), b1 = rand(-15, 15);
-          let res1 = (a1 * x1) + b1;
-          qText = `หา x: ${a1}x ${b1 >= 0 ? '+ ' + b1 : '- ' + Math.abs(b1)} = ${res1}`; 
-          correctAns = x1;
-          break;
-        case 2: // เลขยกกำลัง 3
-          let base2 = rand(2, 6);
-          let pwr2 = rand(3, 4);
-          qText = `${base2}<sup>${pwr2}</sup> = ?`; 
-          correctAns = Math.pow(base2, pwr2);
-          break;
-        case 3: // ตรีโกณมิติ (เพิ่มมุม)
-          const tri = [
-            {q:'sin 30°', a:0.5}, {q:'cos 60°', a:0.5}, {q:'sin 90°', a:1}, 
-            {q:'tan 45°', a:1}, {q:'cos 0°', a:1}, {q:'sin 0°', a:0},
-            {q:'cos 30°', a:0.9} // ใช้ค่าประมาณหรือเลขที่เข้าใจง่าย
-          ];
-          let pick = tri[rand(0, tri.length - 1)];
-          qText = `${pick.q} = ? (ทศนิยม 1 ตำแหน่ง)`; 
-          correctAns = pick.a;
-          break;
-        case 4: // รูทชั้นสูง
-          let rootBase = rand(13, 25);
-          qText = `√${rootBase * rootBase} = ?`; 
-          correctAns = rootBase;
-          break;
-        case 5: // Logarithm (ฐานสลับไปมา)
-          let lBases = [2, 3, 5, 10];
-          let lBase = lBases[rand(0, 3)];
-          let exp = rand(2, 4);
-          let val = Math.pow(lBase, exp);
-          qText = `log<sub>${lBase}</sub> ${val} = ?`; 
-          correctAns = exp;
-          break;
-        case 6: // ค่าสัมบูรณ์และการคำนวณ
-          let n6 = rand(-50, -10), m6 = rand(5, 20);
-          qText = `|${n6}| - ${m6} = ?`;
-          correctAns = Math.abs(n6) - m6;
-          break;
-        case 7: // เลขยกกำลังติดลบ
-          let b7 = 2, p7 = -1;
-          let r7 = rand(1, 3);
-          if (r7 === 1) { qText = `2<sup>-1</sup> = ? (ทศนิยม)`; correctAns = 0.5; }
-          else if (r7 === 2) { qText = `5<sup>-1</sup> = ? (ทศนิยม)`; correctAns = 0.2; }
-          else { qText = `4<sup>-1</sup> = ? (ทศนิยม)`; correctAns = 0.25; }
-          break;
-        case 8: // แฟกทอเรียลเบื้องต้น
-          let fNum = rand(3, 5);
-          qText = `${fNum}! = ?`;
-          let fRes = 1; for(let i=1; i<=fNum; i++) fRes *= i;
-          correctAns = fRes;
-          break;
+        case 1: let x1 = rand(1, 15), a1 = rand(2, 8), b1 = rand(-15, 15); qText = `หา x: ${a1}x ${b1 >= 0 ? '+ ' + b1 : '- ' + Math.abs(b1)} = ${(a1*x1)+b1}`; correctAns = x1; break;
+        case 2: let b2 = rand(2, 5), p2 = rand(3, 4); qText = `${b2}<sup>${p2}</sup> = ?`; correctAns = Math.pow(b2, p2); break;
+        case 3: const tri = [{q:'sin 30°', a:0.5}, {q:'cos 60°', a:0.5}, {q:'tan 45°', a:1}]; let p = tri[rand(0, 2)]; qText = `${p.q} = ?`; correctAns = p.a; break;
+        case 4: let r = rand(13, 25); qText = `√${r*r} = ?`; correctAns = r; break;
+        case 5: let lb = [2, 3, 5, 10][rand(0,3)], ex = rand(2, 4); qText = `log<sub>${lb}</sub> ${Math.pow(lb,ex)} = ?`; correctAns = ex; break;
+        case 6: let n6 = rand(-50, -10), m6 = rand(5, 20); qText = `|${n6}| - ${m6} = ?`; correctAns = Math.abs(n6) - m6; break;
+        case 7: qText = `2<sup>-1</sup> = ? (ทศนิยม)`; correctAns = 0.5; break;
+        case 8: let f = rand(3, 5), fr = 1; for(let i=1; i<=f; i++) fr*=i; qText = `${f}! = ?`; correctAns = fr; break;
       }
       document.getElementById('questionText').innerHTML = qText;
     }
@@ -420,10 +428,20 @@
     function startTimer() {
       clearInterval(timer);
       const bar = document.getElementById('timer-fill');
+      let effectiveTime = activeSlow ? timeLimit * 1.5 : timeLimit;
+      activeSlow = false;
       bar.style.transition = 'none'; bar.style.width = '100%';
-      setTimeout(() => { bar.style.transition = `width ${timeLimit}s linear`; bar.style.width = '0%'; }, 50);
-      let t = timeLimit;
-      timer = setInterval(() => { t--; if(t <= 0) checkAnswer(); }, 1000);
+      bar.classList.remove('timer-danger');
+      setTimeout(() => { 
+        bar.style.transition = `width ${effectiveTime}s linear`; 
+        bar.style.width = '0%'; 
+      }, 50);
+      let t = effectiveTime;
+      timer = setInterval(() => { 
+        t--; 
+        if(t <= 3) bar.classList.add('timer-danger');
+        if(t <= 0) { checkAnswer(); }
+      }, 1000);
     }
 
     function checkAnswer() {
@@ -434,54 +452,102 @@
     function processResult(isCorrect) {
       clearInterval(timer);
       const badge = document.getElementById('comboBadge');
+      const card = document.getElementById('gameCard');
+      const timeUsed = (Date.now() - startTime) / 1000;
+
       if (isCorrect) {
+        // Update Ghost record
+        if(!bestTimes[difficulty] || timeUsed < bestTimes[difficulty]) {
+          bestTimes[difficulty] = timeUsed;
+          localStorage.setItem('mathBestTimes', JSON.stringify(bestTimes));
+        }
+
         correctCount++; combo++;
-        let mult = 1 + (Math.min(combo, 10) * 0.1);
-        let bonusThreshold = (difficulty === 'hard' ? 10 : (difficulty === 'medium' ? 7 : 5));
-        let bonus = (Date.now() - startTime) / 1000 < bonusThreshold ? 5 : 0;
+        let mult = 1 + (Math.min(combo, 15) * 0.1);
+        let bonus = timeUsed < 4 ? 10 : 0;
         if(bonus > 0) document.getElementById('bonus-label').style.opacity = '1';
-        currentScore += Math.round(((difficulty === 'easy' ? 10 : (difficulty === 'medium' ? 15 : 20)) + bonus) * mult);
+        let gained = Math.round(((difficulty === 'easy' ? 10 : (difficulty === 'medium' ? 15 : 25)) + bonus) * mult);
+        if(activeDouble) { gained *= 2; activeDouble = false; }
+        currentScore += gained;
         badge.textContent = `COMBO x${mult.toFixed(1)} 🔥`;
-        badge.classList.add('combo-active');
-        playSfx(500 + (combo * 50));
+        playSfx(400 + (combo * 60), 'triangle');
       } else {
-        combo = 0; currentScore = Math.max(0, currentScore - 5);
+        lives--; combo = 0; currentScore = Math.max(0, currentScore - 10);
+        updateHUD();
         badge.textContent = `COMBO x1.0`;
-        badge.classList.remove('combo-active');
-        document.getElementById('mainBody').classList.add('shake-screen');
-        setTimeout(() => document.getElementById('mainBody').classList.remove('shake-screen'), 400);
-        playSfx(150, 'sawtooth');
+        card.classList.add('shake');
+        setTimeout(() => card.classList.remove('shake'), 300);
+        playSfx(100, 'sawtooth', 0.4);
       }
       document.getElementById('score').textContent = currentScore;
-      setTimeout(nextQuestion, 600);
+      if(lives > 0) setTimeout(nextQuestion, 500);
+      else endGame();
     }
 
     function endGame() {
       saveRank(currentScore);
       displayRank('rankTable');
+      
+      // Calculate Mockup Global Rank
+      let percent = Math.min(99, Math.floor((currentScore / 2500) * 100));
+      if(currentScore > 2000) percent = 99;
+      else if(currentScore < 100) percent = rand(5, 15);
+      document.getElementById('globalRankText').textContent = `คุณเก่งกว่าผู้เล่น ${percent}% ของโลก 🌏`;
+
       document.getElementById('finalScore').textContent = currentScore;
-      document.getElementById('statsSummary').innerHTML = `✅ ถูก ${correctCount}/20 | โหมด: ${difficulty === 'easy' ? 'ง่าย' : (difficulty === 'medium' ? 'ปานกลาง' : 'ยาก')}`;
+      document.getElementById('statsSummary').innerHTML = `ถูกต้อง: ${correctCount}/20 ข้อ | ระดับ: ${difficulty.toUpperCase()}`;
+      let badgeText = currentScore > 1000 ? "Math God ⚡" : (currentScore > 500 ? "Math Warrior" : "Novice");
+      document.getElementById('badge-ui').textContent = badgeText;
+      document.getElementById('congratsText').textContent = (lives <= 0) ? "GAME OVER!" : "MISSION COMPLETE!";
+      document.getElementById('congratsText').style.color = (lives <= 0) ? "var(--danger)" : "var(--neon-green)";
       changeScreen('result');
+      animateFireworks();
+      playSfx(600, 'sine');
+    }
+
+    // --- [ใหม่] ฟังก์ชันแชร์รูปภาพ ---
+    function shareAchievement() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 600; canvas.height = 400;
+      const ctx = canvas.getContext('2d');
+
+      // BG
+      const grad = ctx.createLinearGradient(0, 0, 600, 400);
+      grad.addColorStop(0, '#1e1b4b'); grad.addColorStop(1, '#0f172a');
+      ctx.fillStyle = grad; ctx.fillRect(0, 0, 600, 400);
+      
+      // Decor
+      ctx.strokeStyle = '#6c5ce7'; ctx.lineWidth = 10; ctx.strokeRect(20, 20, 560, 360);
+      
+      // Text
+      ctx.fillStyle = '#00ff88'; ctx.font = 'bold 30px Kanit'; ctx.fillText('MATHLETICS ACHIEVED!', 150, 80);
+      ctx.fillStyle = 'white'; ctx.font = 'bold 80px Fredoka One'; ctx.fillText(currentScore, 200, 180);
+      ctx.font = '30px Kanit'; ctx.fillText('SCORE', 240, 220);
+      
+      ctx.fillStyle = '#ff9f43'; ctx.font = 'bold 25px Kanit'; 
+      ctx.fillText(document.getElementById('badge-ui').textContent, 210, 280);
+      
+      ctx.fillStyle = '#94a3b8'; ctx.font = '18px Kanit';
+      ctx.fillText(document.getElementById('globalRankText').textContent, 170, 330);
+
+      // Download
+      const link = document.createElement('a');
+      link.download = 'mathletics-score.png';
+      link.href = canvas.toDataURL();
+      link.click();
     }
 
     function saveRank(score) {
       let ranks = JSON.parse(localStorage.getItem('mathRanks') || "[]");
       ranks.push({score: score, date: new Date().toLocaleDateString()});
       ranks.sort((a, b) => b.score - a.score);
-      ranks = ranks.slice(0, 5);
-      localStorage.setItem('mathRanks', JSON.stringify(ranks));
+      localStorage.setItem('mathRanks', JSON.stringify(ranks.slice(0, 5)));
     }
 
     function displayRank(tableId) {
       let ranks = JSON.parse(localStorage.getItem('mathRanks') || "[]");
-      let html = ranks.map((r, i) => `
-        <tr class="${i === 0 ? 'top-rank' : ''}">
-          <td>${i === 0 ? '🥇' : i+1}</td>
-          <td>${r.score} แต้ม</td>
-          <td style="font-size:0.7rem; color:#aaa;">${r.date}</td>
-        </tr>
-      `).join('');
-      document.getElementById(tableId).innerHTML = html || "<tr><td colspan='3'>ไม่มีข้อมูล</td></tr>";
+      let html = ranks.map((r, i) => `<tr><td>${i === 0 ? '🥇' : i+1}</td><td>${r.score} แต้ม</td><td>${r.date}</td></tr>`).join('');
+      document.getElementById(tableId).innerHTML = html || "<tr><td colspan='3'>ยังไม่มีบันทึก</td></tr>";
     }
 
     document.getElementById('answerInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkAnswer(); });
