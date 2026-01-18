@@ -124,7 +124,6 @@
     .timer-bar { width: 100%; height: 12px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin-bottom: 20px; position: relative;}
     #timer-fill { height: 100%; background: linear-gradient(90deg, var(--neon-green), var(--neon-purple)); width: 100%; }
     
-    /* --- [ใหม่] Ghost Mode UI --- */
     #ghost-marker {
       position: absolute; top: 0; width: 3px; height: 100%;
       background: white; box-shadow: 0 0 8px white;
@@ -140,13 +139,16 @@
 
     #badge-ui { display: inline-block; background: var(--neon-orange); color: black; padding: 4px 12px; border-radius: 8px; font-weight: bold; margin-bottom: 10px; font-size: 0.9rem; }
 
-    /* --- [ใหม่] Global Rank UI --- */
     .global-percent {
       font-size: 0.9rem; color: var(--neon-green);
       background: rgba(0, 255, 136, 0.1);
       padding: 5px 15px; border-radius: 20px;
       display: inline-block; margin-bottom: 15px;
       border: 1px solid rgba(0, 255, 136, 0.3);
+    }
+
+    .content-box {
+      text-align: left; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 20px; margin-bottom: 20px; color: #cbd5e1; font-size: 0.95rem; line-height: 1.6;
     }
 
     @keyframes shake {
@@ -168,6 +170,49 @@
       <p style="color: #94a3b8; margin-top:0;">ปลดล็อกขีดจำกัดพลังสมองของคุณ</p>
       <button onclick="initAudio(); changeScreen('mathTips1')">เข้าสู่โหมดเนื้อเรื่อง 🚀</button>
       <button class="rank-btn" onclick="viewRanks()">🏆 บันทึกยอดฝีมือ</button>
+    </div>
+  </div>
+
+  <div id="learn-easy" class="screen hidden">
+    <div class="card">
+      <h2 style="color:var(--neon-green)">🟢 บทเรียนระดับ: ฝึกหัด</h2>
+      <div class="content-box">
+        <b style="color:white">หัวข้อ: การบวกและลบพื้นฐาน</b><br>
+        • การบวกคือการเพิ่มจำนวน เช่น 15 + 10 = 25<br>
+        • การลบคือการหักออก หากตัวตั้งน้อยกว่าตัวลบ ผลลัพธ์จะติดลบ<br>
+        • <i style="color:var(--neon-purple)">เคล็ดลับ:</i> พยายามจำคู่เลขที่บวกกันได้ 10 จะช่วยให้คิดไวขึ้นมาก!
+      </div>
+      <button onclick="startGame('easy')">เริ่มการทดสอบ ⚔️</button>
+      <button class="secondary" onclick="changeScreen('mode')">ย้อนกลับ</button>
+    </div>
+  </div>
+
+  <div id="learn-medium" class="screen hidden">
+    <div class="card">
+      <h2 style="color:var(--neon-orange)">🟡 บทเรียนระดับ: นักสู้</h2>
+      <div class="content-box">
+        <b style="color:white">หัวข้อ: พีชคณิตและเลขยกกำลัง</b><br>
+        • <b>สมการ x:</b> การหาค่า x ให้ย้ายข้างตัวเลขไปฝั่งตรงข้าม (จากคูณไปเป็นหาร)<br>
+        • <b>เลขยกกำลัง:</b> x² คือ x คูณกัน 2 ครั้ง เช่น 12² = 144<br>
+        • <b>จำนวนเต็ม:</b> การบวกเลขติดลบ เหมือนการเป็นหนี้เพิ่มขึ้น!
+      </div>
+      <button onclick="startGame('medium')">เริ่มการทดสอบ ⚔️</button>
+      <button class="secondary" onclick="changeScreen('mode')">ย้อนกลับ</button>
+    </div>
+  </div>
+
+  <div id="learn-hard" class="screen hidden">
+    <div class="card">
+      <h2 style="color:var(--danger)">🔴 บทเรียนระดับ: ปรมาจารย์</h2>
+      <div class="content-box">
+        <b style="color:white">หัวข้อ: ตรีโกณฯ และ Logarithm</b><br>
+        • <b>Trigonometry:</b> Sin 30° = 0.5, Tan 45° = 1<br>
+        • <b>Logarithm:</b> logₐx คือการหาว่า a ยกกำลังอะไรแล้วได้ x<br>
+        • <b>Factorial (!):</b> n! คือผลคูณตั้งแต่ 1 ถึง n เช่น 3! = 1×2×3 = 6<br>
+        • <b>Absolute (|x|):</b> เปลี่ยนค่าลบให้เป็นบวกเสมอ
+      </div>
+      <button onclick="startGame('hard')">เริ่มการทดสอบ ⚔️</button>
+      <button class="secondary" onclick="changeScreen('mode')">ย้อนกลับ</button>
     </div>
   </div>
 
@@ -216,9 +261,9 @@
     <div class="card">
       <h2 style="color:var(--white)">เลือกระดับพลังงาน</h2>
       <div style="display:flex; flex-direction:column; gap:10px;">
-        <button onclick="startGame('easy')" style="background:var(--neon-green); color:#064e3b;">🟢 ฝึกหัด (Easy)</button>
-        <button onclick="startGame('medium')" style="background:var(--neon-orange); color:#431407;">🟡 นักสู้ (Medium)</button>
-        <button onclick="startGame('hard')" style="background:var(--primary);">🔴 ปรมาจารย์ (Hard)</button>
+        <button onclick="changeScreen('learn-easy')" style="background:var(--neon-green); color:#064e3b;">🟢 ฝึกหัด (Easy)</button>
+        <button onclick="changeScreen('learn-medium')" style="background:var(--neon-orange); color:#431407;">🟡 นักสู้ (Medium)</button>
+        <button onclick="changeScreen('learn-hard')" style="background:var(--primary);">🔴 ปรมาจารย์ (Hard)</button>
         <button class="secondary" onclick="changeScreen('mathGuide')">ย้อนกลับ</button>
       </div>
     </div>
@@ -253,15 +298,11 @@
     <div class="card">
       <div id="badge-ui">PRO CALCULATOR</div>
       <h1 id="congratsText" style="color:var(--neon-green); margin-top:0;">MISSION COMPLETE!</h1>
-      
       <div class="global-percent" id="globalRankText">คุณเก่งกว่าผู้เล่น 0% ของโลก</div>
-      
       <p style="color:#94a3b8;">คะแนนรวมที่ได้รับ</p>
       <div id="finalScore" style="color:var(--white); font-size:4rem; font-weight:bold; font-family: 'Fredoka One'; margin-bottom: 20px;">0</div>
-      
       <table class="rank-table" id="rankTable"></table>
       <div id="statsSummary" style="margin:20px 0; color:var(--neon-purple); font-weight:bold;"></div>
-      
       <button class="share-btn" onclick="shareAchievement()">📸 แชร์ความสำเร็จ</button>
       <button onclick="location.reload()" style="background:var(--primary);">🏠 เล่นใหม่อีกครั้ง</button>
     </div>
@@ -272,8 +313,6 @@
     let currentScore = 0, currentQ = 0, correctAns = 0, timer, difficulty = 'easy';
     let combo = 0, correctCount = 0, startTime, timeLimit = 12, lives = 3;
     let musicStep = 0, items = { slow: 1, double: 1 }, activeDouble = false, activeSlow = false;
-    
-    // Ghost Mode Data
     let bestTimes = JSON.parse(localStorage.getItem('mathBestTimes') || "{}");
 
     function initAudio() { if (audioCtx) return; audioCtx = new (window.AudioContext || window.webkitAudioContext)(); playFunMusic(); }
@@ -368,20 +407,12 @@
       document.getElementById('answerInput').value = '';
       document.getElementById('answerInput').focus();
       document.getElementById('bonus-label').style.opacity = '0';
-      
       const card = document.getElementById('gameCard');
       if(combo >= 5) card.classList.add('streak-aura-rgb');
       else card.classList.remove('streak-aura-rgb');
-
-      // Ghost Mode Logic
       const ghost = document.getElementById('ghost-marker');
-      if(bestTimes[difficulty]) {
-        ghost.style.display = 'block';
-        ghost.style.left = (100 - (bestTimes[difficulty] / timeLimit * 100)) + "%";
-      } else {
-        ghost.style.display = 'none';
-      }
-
+      if(bestTimes[difficulty]) { ghost.style.display = 'block'; ghost.style.left = (100 - (bestTimes[difficulty] / timeLimit * 100)) + "%"; }
+      else { ghost.style.display = 'none'; }
       if(difficulty === 'hard') generateHardQuestion();
       else if(difficulty === 'medium') generateMediumQuestion();
       else {
@@ -454,14 +485,11 @@
       const badge = document.getElementById('comboBadge');
       const card = document.getElementById('gameCard');
       const timeUsed = (Date.now() - startTime) / 1000;
-
       if (isCorrect) {
-        // Update Ghost record
         if(!bestTimes[difficulty] || timeUsed < bestTimes[difficulty]) {
           bestTimes[difficulty] = timeUsed;
           localStorage.setItem('mathBestTimes', JSON.stringify(bestTimes));
         }
-
         correctCount++; combo++;
         let mult = 1 + (Math.min(combo, 15) * 0.1);
         let bonus = timeUsed < 4 ? 10 : 0;
@@ -487,13 +515,10 @@
     function endGame() {
       saveRank(currentScore);
       displayRank('rankTable');
-      
-      // Calculate Mockup Global Rank
       let percent = Math.min(99, Math.floor((currentScore / 2500) * 100));
       if(currentScore > 2000) percent = 99;
       else if(currentScore < 100) percent = rand(5, 15);
       document.getElementById('globalRankText').textContent = `คุณเก่งกว่าผู้เล่น ${percent}% ของโลก 🌏`;
-
       document.getElementById('finalScore').textContent = currentScore;
       document.getElementById('statsSummary').innerHTML = `ถูกต้อง: ${correctCount}/20 ข้อ | ระดับ: ${difficulty.toUpperCase()}`;
       let badgeText = currentScore > 1000 ? "Math God ⚡" : (currentScore > 500 ? "Math Warrior" : "Novice");
@@ -505,32 +530,21 @@
       playSfx(600, 'sine');
     }
 
-    // --- [ใหม่] ฟังก์ชันแชร์รูปภาพ ---
     function shareAchievement() {
       const canvas = document.createElement('canvas');
       canvas.width = 600; canvas.height = 400;
       const ctx = canvas.getContext('2d');
-
-      // BG
       const grad = ctx.createLinearGradient(0, 0, 600, 400);
       grad.addColorStop(0, '#1e1b4b'); grad.addColorStop(1, '#0f172a');
       ctx.fillStyle = grad; ctx.fillRect(0, 0, 600, 400);
-      
-      // Decor
       ctx.strokeStyle = '#6c5ce7'; ctx.lineWidth = 10; ctx.strokeRect(20, 20, 560, 360);
-      
-      // Text
       ctx.fillStyle = '#00ff88'; ctx.font = 'bold 30px Kanit'; ctx.fillText('MATHLETICS ACHIEVED!', 150, 80);
       ctx.fillStyle = 'white'; ctx.font = 'bold 80px Fredoka One'; ctx.fillText(currentScore, 200, 180);
       ctx.font = '30px Kanit'; ctx.fillText('SCORE', 240, 220);
-      
       ctx.fillStyle = '#ff9f43'; ctx.font = 'bold 25px Kanit'; 
       ctx.fillText(document.getElementById('badge-ui').textContent, 210, 280);
-      
       ctx.fillStyle = '#94a3b8'; ctx.font = '18px Kanit';
       ctx.fillText(document.getElementById('globalRankText').textContent, 170, 330);
-
-      // Download
       const link = document.createElement('a');
       link.download = 'mathletics-score.png';
       link.href = canvas.toDataURL();
